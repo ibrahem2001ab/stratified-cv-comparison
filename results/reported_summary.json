@@ -1,0 +1,43 @@
+{
+  "experiment": {
+    "datasets": 13,
+    "algorithms": 2,
+    "protocols": 2,
+    "repeats": 10,
+    "folds_per_repeat": 5,
+    "total_model_fits": 2600,
+    "base_seed": 235975,
+    "metric": "macro_f1"
+  },
+  "primary_result": {
+    "ranking_flips": 0,
+    "mean_delta_gap": -0.00029,
+    "median_delta_gap": -0.00094,
+    "median_absolute_delta_gap": 0.00568,
+    "wilcoxon_statistic": 44.0,
+    "wilcoxon_p": 0.946,
+    "paired_t_p": 0.898
+  },
+  "secondary_results": {
+    "logistic_regression_mean_score_effect": 0.00118,
+    "logistic_regression_wilcoxon_p": 0.635,
+    "decision_tree_mean_score_effect": 0.00147,
+    "decision_tree_wilcoxon_p": 0.414,
+    "median_fold_composition_sd_reduction_percent": 93.4,
+    "repeat_score_sd_wilcoxon_p": 0.247,
+    "minority_share_effect_spearman_rho": 0.082,
+    "minority_share_effect_spearman_p": 0.789
+  },
+  "reported_compute": {
+    "parallel_workers": 4,
+    "logical_cpus": 9,
+    "wall_seconds": 105.8,
+    "summed_fit_score_seconds": 376.2,
+    "platform": "x86_64 Linux",
+    "python": "3.12.13",
+    "scikit_learn": "1.8.0",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scipy": "1.17.0"
+  }
+}

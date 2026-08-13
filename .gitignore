@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Experiment outputs (reported summaries remain tracked)
+results/reproduced/
+
+# LaTeX build files
+*.aux
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+paper.pdf
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/

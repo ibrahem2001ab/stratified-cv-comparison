@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the accompanying course report."
+title: "Do We Need Stratified Cross-Validation to Compare Classification Algorithms?"
+type: software
+authors:
+  - family-names: "Abd Elhadi"
+    given-names: "Ibrahim"
+year: 2026
+license: MIT
+repository-code: "https://github.com/ibrahem2001ab/stratified-cv-comparison"

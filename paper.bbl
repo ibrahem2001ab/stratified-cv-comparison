@@ -1,0 +1,55 @@
+\begin{thebibliography}{6}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Dem{\v{s}}ar(2006)]{demsar2006}
+Janez Dem{\v{s}}ar.
+\newblock Statistical comparisons of classifiers over multiple data sets.
+\newblock \emph{Journal of Machine Learning Research}, 7:\penalty0 1--30, 2006.
+\newblock URL \url{https://jmlr.org/papers/v7/demsar06a.html}.
+
+\bibitem[Japkowicz and Stephen(2002)]{japkowicz2002}
+Nathalie Japkowicz and Shaju Stephen.
+\newblock The class imbalance problem: A systematic study.
+\newblock \emph{Intelligent Data Analysis}, 6\penalty0 (5):\penalty0 429--449,
+  2002.
+\newblock \doi{10.3233/IDA-2002-6504}.
+
+\bibitem[Kohavi(1995)]{kohavi1995}
+Ron Kohavi.
+\newblock A study of cross-validation and bootstrap for accuracy estimation and
+  model selection.
+\newblock In \emph{Proceedings of the 14th International Joint Conference on
+  Artificial Intelligence}, pages 1137--1145, 1995.
+
+\bibitem[Pedregosa et~al.(2011)Pedregosa, Varoquaux, Gramfort, Michel, Thirion,
+  Grisel, Blondel, Prettenhofer, Weiss, Dubourg, Vanderplas, Passos,
+  Cournapeau, Brucher, Perrot, and Duchesnay]{pedregosa2011}
+Fabian Pedregosa, Ga{\"e}l Varoquaux, Alexandre Gramfort, Vincent Michel,
+  Bertrand Thirion, Olivier Grisel, Mathieu Blondel, Peter Prettenhofer, Ron
+  Weiss, Vincent Dubourg, Jake Vanderplas, Alexandre Passos, David Cournapeau,
+  Matthieu Brucher, Matthieu Perrot, and {\'E}douard Duchesnay.
+\newblock Scikit-learn: Machine learning in python.
+\newblock \emph{Journal of Machine Learning Research}, 12:\penalty0 2825--2830,
+  2011.
+\newblock URL \url{https://jmlr.org/papers/v12/pedregosa11a.html}.
+
+\bibitem[{scikit-learn developers}(2026)]{sklearncv}
+{scikit-learn developers}.
+\newblock Cross-validation: Evaluating estimator performance.
+\newblock scikit-learn User Guide, 2026.
+\newblock URL
+  \url{https://scikit-learn.org/stable/modules/cross_validation.html}.
+\newblock Accessed July 2026.
+
+\bibitem[Vanschoren et~al.(2014)Vanschoren, van Rijn, Bischl, and
+  Torgo]{vanschoren2014}
+Joaquin Vanschoren, Jan~N. van Rijn, Bernd Bischl, and Luis Torgo.
+\newblock {OpenML}: Networked science in machine learning.
+\newblock \emph{SIGKDD Explorations}, 15\penalty0 (2):\penalty0 49--60, 2014.
+\newblock \doi{10.1145/2641190.2641198}.
+
+\end{thebibliography}
