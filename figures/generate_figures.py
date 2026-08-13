@@ -6,6 +6,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+plt.rcParams.update({
+    "pdf.fonttype": 42,
+    "ps.fonttype": 42,
+    "font.size": 10,
+    "axes.labelsize": 10,
+    "xtick.labelsize": 9,
+    "ytick.labelsize": 9,
+    "legend.fontsize": 9,
+})
+
 OUT = Path(__file__).resolve().parent
 RESULTS = OUT.parent / "results" / "reported_gap_results.csv"
 
@@ -63,7 +73,7 @@ def dataset_imbalance():
     ax.barh(labels, values, color=colors, height=0.68)
     ax.axvline(50, color="#566573", linestyle="--", linewidth=1, label="50% binary balance")
     for y, value in enumerate(values):
-        ax.text(value + 0.7, y, f"{value:.1f}%", va="center", fontsize=8)
+        ax.text(value + 0.7, y, f"{value:.1f}%", va="center", fontsize=9)
     ax.set_xlim(0, 53)
     ax.set_xlabel("Smallest class share (%)")
     style_axes(ax)
@@ -90,19 +100,19 @@ def algorithm_gaps():
     ax.plot([lo, hi], [lo, hi], color="#9aa5b1", linewidth=1.1, label="unchanged gap")
     ax.axhline(0, color="#566573", linewidth=0.9)
     ax.axvline(0, color="#566573", linewidth=0.9)
-    ax.scatter(x, y, s=34, color="#1f77b4", edgecolor="white", linewidth=0.6, zorder=3)
+    ax.scatter(x, y, s=42, color="#1f77b4", edgecolor="white", linewidth=0.7, zorder=3)
     offsets = {"Phoneme": (5, -2), "PC1": (5, 3), "QSAR Biodegradation": (-76, 2),
                "Mammography": (5, 2), "Adult": (5, -8), "Spambase": (5, 4)}
     for name, xi, yi in zip(labels, x, y):
         if name in offsets:
-            ax.annotate(name, (xi, yi), xytext=offsets[name], textcoords="offset points", fontsize=7)
+            ax.annotate(name, (xi, yi), xytext=offsets[name], textcoords="offset points", fontsize=8)
     ax.set_xlim(lo, hi)
     ax.set_ylim(lo, hi)
     ax.set_aspect("equal", adjustable="box")
     ax.set_xlabel("LR - DT gap under Regular K-Fold")
     ax.set_ylabel("LR - DT gap under Stratified K-Fold")
     style_axes(ax)
-    ax.legend(frameon=False, loc="upper left", fontsize=8)
+    ax.legend(frameon=False, loc="upper left")
     fig.tight_layout()
     fig.savefig(OUT / "algorithm_gaps.pdf", bbox_inches="tight")
     plt.close(fig)

@@ -1,15 +1,36 @@
 \documentclass[twoside,11pt]{article}
 
 % JMLR course template. The preprint option removes journal-specific issue data.
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage[preprint]{jmlr2e}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{array}
 \usepackage{enumitem}
+\usepackage{listings}
 \usepackage{microtype}
 \usepackage{xcolor}
 \usepackage{url}
 \usepackage{lastpage}
+
+% Preserve the required 11 pt JMLR format while improving on-screen legibility.
+\setlength{\emergencystretch}{2em}
+\raggedbottom
+\lstset{
+  basicstyle=\ttfamily\small,
+  frame=single,
+  rulecolor=\color{black!25},
+  backgroundcolor=\color{black!2},
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  breaklines=true,
+  xleftmargin=0.5em,
+  xrightmargin=0.5em,
+  aboveskip=0.7em,
+  belowskip=0.7em
+}
 
 \hypersetup{
   pdftitle={Do We Need Stratified Cross-Validation to Compare Classification Algorithms?},
@@ -63,7 +84,7 @@ The scientific concern in this project is comparative rather than predictive. If
 The study compares Logistic Regression (LR), which represents a regularized linear decision boundary, and an unpruned Decision Tree (DT), which represents a nonlinear, high-variance learner. The primary outcome is the LR--DT score gap under each CV protocol. The null hypothesis $H_0$ states that the dataset-level change in this gap is centered at zero and that the protocol does not systematically change the algorithm comparison. The alternative $H_1$ states that the gap changes systematically and/or changes enough to reverse the winner on at least one dataset. Two-sided paired tests use a significance level of $\alpha=0.05$; practical relevance is evaluated from effect magnitudes and ranking reversals as well as $p$-values.
 
 The paper makes three contributions:
-\begin{itemize}[leftmargin=*,nosep]
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=3pt]
   \item a repeated, paired evaluation on 13 heterogeneous datasets rather than a conclusion based on one example;
   \item an operational analysis of score shifts, estimate variability, fold composition, comparison-gap changes, and ranking flips; and
   \item a leakage-safe and reproducible implementation with fixed OpenML IDs, fixed random seeds, explicit software versions, and compute reporting.
@@ -101,28 +122,32 @@ The datasets were fixed in the project proposal and fetched by OpenML data ID, p
 \caption{Benchmark datasets. $n$ is the number of observations, $p$ the number of input features, and ``Minority'' the smallest class share.}
 \label{tab:datasets}
 \small
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{lrrrr@{\qquad}lrrrr}
+\begin{tabular}{lrrrr}
 \toprule
-Dataset & ID & $n$ & $p$ & Minority & Dataset & ID & $n$ & $p$ & Minority \\
+Dataset & OpenML ID & $n$ & $p$ & Minority share \\
 \midrule
-Blood Transfusion & 1464 & 748 & 4 & 23.8\% & German Credit & 31 & 1,000 & 20 & 30.0\% \\
-Adult & 1590 & 48,842 & 14 & 23.9\% & KC1 & 1067 & 2,109 & 21 & 15.5\% \\
-QSAR Biodeg. & 1494 & 1,055 & 41 & 33.7\% & PC1 & 1068 & 1,109 & 21 & 6.9\% \\
-Spambase & 44 & 4,601 & 57 & 39.4\% & ILPD & 1480 & 583 & 10 & 28.6\% \\
-Iris & 61 & 150 & 4 & 33.3\% & Diabetes & 37 & 768 & 8 & 34.9\% \\
-Credit Approval & 29 & 690 & 15 & 44.5\% & Mammography & 310 & 11,183 & 6 & 2.3\% \\
-Phoneme & 1489 & 5,404 & 5 & 29.3\% & & & & & \\
+Blood Transfusion & 1464 & 748 & 4 & 23.8\% \\
+Adult & 1590 & 48,842 & 14 & 23.9\% \\
+QSAR Biodegradation & 1494 & 1,055 & 41 & 33.7\% \\
+Spambase & 44 & 4,601 & 57 & 39.4\% \\
+Iris & 61 & 150 & 4 & 33.3\% \\
+German Credit & 31 & 1,000 & 20 & 30.0\% \\
+KC1 & 1067 & 2,109 & 21 & 15.5\% \\
+PC1 & 1068 & 1,109 & 21 & 6.9\% \\
+ILPD & 1480 & 583 & 10 & 28.6\% \\
+Diabetes & 37 & 768 & 8 & 34.9\% \\
+Credit Approval & 29 & 690 & 15 & 44.5\% \\
+Mammography & 310 & 11,183 & 6 & 2.3\% \\
+Phoneme & 1489 & 5,404 & 5 & 29.3\% \\
 \bottomrule
 \end{tabular}
-}
 \end{table}
 
 This is a deliberately heterogeneous benchmark, not a random sample of all classification tasks. Inference therefore applies to the selected suite. The breadth is nevertheless important because a single balanced dataset would not stress the property that stratification is designed to control.
 
 \subsection{Experimental factors and models}
 For every dataset, two splitters are compared:
-\begin{enumerate}[leftmargin=*,nosep]
+\begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=3pt]
   \item \regcv: shuffled 5-fold K-Fold;
   \item \stratcv: shuffled 5-fold Stratified K-Fold.
 \end{enumerate}
@@ -139,6 +164,12 @@ Each split is reused for LR and DT, preserving a paired comparison within a prot
 \end{equation}
 model fits.
 
+The resulting aggregation hierarchy is fold $\rightarrow$ repeat $\rightarrow$ protocol $\rightarrow$ dataset. Let $s_{d,p,a,r,k}$ denote a fold score for dataset $d$, protocol $p$, algorithm $a$, repeat $r$, and fold $k$. The reported mean is
+\begin{equation}
+\overline{F}_{1,d,p,a}=\frac{1}{10}\sum_{r=1}^{10}\left(\frac{1}{5}\sum_{k=1}^{5}s_{d,p,a,r,k}\right).
+\end{equation}
+This expression makes explicit which dimensions are averaged and prevents a fold-level test from being mistaken for a dataset-level comparison.
+
 \subsection{Outcomes and hypothesis tests}
 For dataset $d$ and protocol $p$, define the algorithm-comparison gap
 \begin{equation}
@@ -151,11 +182,28 @@ A positive gap favors LR, a negative gap favors DT, and a ranking flip occurs wh
 Secondary outcomes are: (i) the stratified-minus-regular mean \macrof separately for each model; (ii) the standard deviation of the ten repeat-level mean scores, analyzed over 26 dataset--algorithm pairs; (iii) the standard deviation of the smallest class share across the five test folds; and (iv) the Spearman association between dataset minority share and the average protocol score effect. These outcomes distinguish a mechanical improvement in fold construction from a performance change.
 
 \section{Implementation Details}
+\subsection{Software and parallel execution}
 The experiment uses Python 3.12.13, scikit-learn 1.8.0, NumPy 2.3.5, pandas 2.2.3, and SciPy 1.17.0. OpenML provides the fixed dataset identities and automated retrieval. scikit-learn implements the splitters, preprocessing pipelines, estimators, and metric; pandas and NumPy organize the results; SciPy performs the paired Wilcoxon, paired $t$, and Spearman tests.
 
 Independent dataset--repeat--protocol tasks are executed with four parallel workers. Within a task, the same folds are used for both algorithms. The machine exposes nine logical CPUs and runs x86\_64 Linux. The complete run takes 105.8 seconds of wall-clock time; summed fit-and-score time is 376.2 seconds. The difference reflects parallel execution and the fact that the summed time counts concurrent work separately.
 
+\subsection{Code and reproducibility artifacts}
 Reproducibility controls include fixed OpenML IDs, a documented base seed, matched seeds across protocols, fold-local preprocessing, explicit model configurations, and retention of fold-level scores and timings. The complete reproduction script, reported result tables, figure-generation code, environment requirements, and JMLR source are available at \url{https://github.com/ibrahem2001ab/stratified-cv-comparison}. The repository README documents the commands for rerunning the 2,600 model fits and rebuilding this paper.
+
+Listing~\ref{lst:core} shows the central evaluation logic in simplified form. The actual repository version also records timing, fold identifiers, dataset metadata, aggregate tables, statistical tests, and the software environment.
+
+\begin{lstlisting}[language=Python,caption={Core leakage-safe evaluation loop. Both algorithms reuse the same train/test indices.},label={lst:core}]
+for train_idx, test_idx in splitter.split(X, y):
+    for name, estimator in models(seed).items():
+        estimator.fit(X.iloc[train_idx], y.iloc[train_idx])
+        prediction = estimator.predict(X.iloc[test_idx])
+        score = f1_score(
+            y.iloc[test_idx], prediction,
+            average="macro", zero_division=0,
+        )
+\end{lstlisting}
+
+The repository separates the recorded results from newly reproduced outputs. Published summary files remain under \texttt{results/}, whereas a new run writes to \texttt{results/reproduced/}. Three offline smoke tests check the declared fit count, mixed numeric/categorical preprocessing, and the expected reduction in class-share variation on synthetic imbalanced data. A continuous-integration workflow runs these checks whenever the repository is updated.
 
 \section{Results}
 \subsection{Stratification stabilizes fold composition}
@@ -165,7 +213,7 @@ The class-balance range of the benchmark is shown in Figure~\ref{fig:imbalance}.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.88\linewidth]{figures/dataset_imbalance.pdf}
+\includegraphics[width=0.94\linewidth]{figures/dataset_imbalance.pdf}
 \caption{Smallest class share for the 13 OpenML datasets. The dashed line marks the balanced 50\% value for binary data; Iris is a balanced three-class dataset at 33.3\%.}
 \label{fig:imbalance}
 \end{figure}
@@ -210,48 +258,60 @@ An exploratory Spearman test finds no association between minority-class share a
 \caption{Algorithm-comparison gaps $\gap=\overline{F}_{1,\mathrm{LR}}-\overline{F}_{1,\mathrm{DT}}$. Positive values favor LR. $\deltag$ is stratified minus regular.}
 \label{tab:gaps}
 \small
-\resizebox{\linewidth}{!}{%
-\begin{tabular}{lrrr@{\qquad}lrrr}
+\begin{tabular}{lrrr}
 \toprule
-Dataset & Regular & Stratified & $\deltag$ & Dataset & Regular & Stratified & $\deltag$ \\
+Dataset & Regular gap & Stratified gap & $\deltag$ \\
 \midrule
-Adult & +.0318 & +.0319 & +.0001 & ILPD & -.0161 & -.0176 & -.0014 \\
-Blood Transfusion & -.0450 & -.0424 & +.0026 & Iris & +.0119 & +.0075 & -.0044 \\
-Credit Approval & +.0572 & +.0504 & -.0067 & KC1 & -.0275 & -.0332 & -.0057 \\
-Diabetes & +.0542 & +.0632 & +.0089 & Mammography & -.0370 & -.0265 & +.0105 \\
-German Credit & +.0594 & +.0508 & -.0086 & PC1 & -.0896 & -.0753 & +.0143 \\
-Phoneme & -.1615 & -.1625 & -.0009 & QSAR Biodeg. & +.0717 & +.0579 & -.0138 \\
-Spambase & +.0110 & +.0124 & +.0014 & & & & \\
+Adult & +.0318 & +.0319 & +.0001 \\
+Blood Transfusion & -.0450 & -.0424 & +.0026 \\
+Credit Approval & +.0572 & +.0504 & -.0067 \\
+Diabetes & +.0542 & +.0632 & +.0089 \\
+German Credit & +.0594 & +.0508 & -.0086 \\
+ILPD & -.0161 & -.0176 & -.0014 \\
+Iris & +.0119 & +.0075 & -.0044 \\
+KC1 & -.0275 & -.0332 & -.0057 \\
+Mammography & -.0370 & -.0265 & +.0105 \\
+PC1 & -.0896 & -.0753 & +.0143 \\
+Phoneme & -.1615 & -.1625 & -.0009 \\
+QSAR Biodegradation & +.0717 & +.0579 & -.0138 \\
+Spambase & +.0110 & +.0124 & +.0014 \\
 \bottomrule
 \end{tabular}
-}
 \end{table}
 
 \section{Discussion}
+\subsection{Why composition stability does not guarantee a score gain}
 The evidence separates two meanings of ``stability.'' First, fold-composition stability improves sharply: stratification makes the proportion of the smallest class predictable. Second, inferential stability---the variability and central value of the performance comparison---changes little. These findings are compatible because label prevalence is only one determinant of a fold's difficulty. Conditional feature distributions, rare subgroups, noisy labels, duplicates, and decision-boundary geometry remain uncontrolled.
 
 For the benchmark studied here, the primary scientific conclusion is stable. Stratification changes some numeric estimates by roughly one \macrof percentage point, but the LR--DT gap remains on the same side of zero for every dataset. The absence of a ranking reversal is more directly relevant to the research question than a small change in one model's isolated score.
 
 The result does not justify abandoning stratification. A class-preserving splitter is a low-cost safeguard when observations are exchangeable and the target is imbalanced. It reduces the risk of folds with a sparse or absent class and makes each fold more representative with respect to the target marginal. The appropriate recommendation is therefore to use stratification by default in ordinary imbalanced classification, while describing it as a protection against pathological label allocation rather than as a performance-improvement method.
 
-The choice of splitter must still respect the data-generating process. Grouped observations require group-aware splitting to prevent leakage, and temporally ordered data require time-aware evaluation. Ordinary stratification cannot repair a protocol that breaks those structural constraints.
+\subsection{Practical protocol selection}
+The splitter must respect the data-generating process. Group-aware CV is required for repeated patients, users, or devices, and time-aware evaluation is required for chronological prediction. For exchangeable imbalanced samples, Stratified K-Fold is a suitable starting point; the split should be repeated with documented seeds and algorithms should be compared with paired dataset-level effects.
 
 \section{AI Usage Declaration}
-Generative AI tools were used to assist with code scaffolding, LaTeX formatting, language editing, and visual quality checks. Automated tools also supported repetitive data processing, experiment execution, aggregation, and chart generation. The research question, dataset list, algorithms, evaluation metric, experimental constraints, interpretation of statistical results, and final claims were reviewed by the author. AI-generated text and code were checked against the recorded numerical outputs; no AI system was treated as an empirical source. This assistance made it easier to learn how to express a paired multi-dataset experiment as a reproducible pipeline and how to distinguish fold-composition stability from performance stability.
+Generative AI assisted with code scaffolding, LaTeX formatting, language editing, and visual checks. Automated tools supported data processing, experiment execution, aggregation, and chart generation. The author selected the question, data, models, metric, and design, and verified the code and numerical claims against recorded outputs. AI was not treated as an empirical source. It aided learning about reproducible paired experiments and the difference between fold-composition and performance stability.
 
 \section{Limitations}
-The conclusions are conditional on two untuned algorithms. Ensembles, calibrated models, class-weighted estimators, and tuned pipelines may respond differently to the split protocol. Similarly, \macrof emphasizes equal class contribution; ROC-AUC, PR-AUC, expected cost, calibration error, or application-specific utility could produce another pattern.
+\paragraph{Construct validity.}
+The conclusions cover two untuned algorithms and \macrof. Ensembles, tuned pipelines, calibration measures, PR-AUC, or application-specific costs may respond differently to the split protocol.
 
-The 13 OpenML datasets are heterogeneous but were not sampled randomly from a defined population of tasks. Dataset-level statistical inference therefore summarizes this benchmark rather than establishing a universal law. Ten repeats provide a useful compact analysis, but problems with extremely few minority observations may require more repeats or repeated holdout designs.
+\paragraph{External validity.}
+The 13 OpenML datasets are heterogeneous but not a random sample of all classification tasks. The inference describes this benchmark; rarer classes may require more datasets, repeats, or repeated holdout designs.
 
-Finally, the benchmark contains no grouped or time-dependent task. The recommendation applies only when observations can be treated as exchangeable. In applications with patients, users, machines, locations, or chronological drift, respecting group and temporal boundaries takes priority over ordinary label stratification.
+\paragraph{Internal validity.}
+The benchmark contains no grouped or time-dependent task. The recommendation applies only to exchangeable observations; group and temporal boundaries take priority over ordinary stratification.
+
+\paragraph{Conclusion validity.}
+With 13 datasets, the tests have limited power for very small effects. Failure to reject $H_0$ is not proof of equivalence; the descriptive result is no ranking reversal and a median absolute gap change of 0.00568.
 
 \section{Conclusion and Future Work}
 Under repeated shuffled 5-fold CV on the 13 specified OpenML datasets, stratification is not required to preserve the comparative conclusion between LR and DT. No dataset changes its winning algorithm, and the dataset-level change in the comparison gap is non-significant ($p=0.946$). The null hypothesis is therefore not rejected.
 
 Stratification nevertheless has a clear operational benefit: it reduces fold-to-fold class-composition variability by a median of 93.4\%. The practical conclusion is concise: stratify for robustness when samples are exchangeable, but compare algorithms using repeated, paired evidence and do not present stratification as a guarantee of higher expected performance.
 
-Future work should test additional classifiers and tuned pipelines, include metrics such as PR-AUC and calibration error, increase the number of datasets and repeats, and study splitters that combine label balance with group or temporal constraints. A particularly useful extension would analyze whether stratification matters more for model-selection decisions than for fixed-model comparisons.
+Future work should test tuned classifiers, PR-AUC and calibration, more datasets and repeats, and splitters that combine label balance with group or temporal constraints. It should also test whether stratification matters more for model selection than for fixed-model comparison.
 
 \vskip 0.2in
 \bibliography{references}
